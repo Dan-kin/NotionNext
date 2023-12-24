@@ -19,7 +19,7 @@ const BLOG = {
 
   AUTHOR: process.env.NEXT_PUBLIC_AUTHOR || 'NouveauDÉPART', // 您的昵称 例如 tangly1024
   BIO: process.env.NEXT_PUBLIC_BIO || '打通中法艺术之路，欢迎关注互动', // 作者简介
-  LINK: process.env.NEXT_PUBLIC_LINK || 'https://NP.com', // 网站地址
+  LINK: process.env.NEXT_PUBLIC_LINK || 'https://nd.acmfc.fr', // 网站地址
   KEYWORDS: process.env.NEXT_PUBLIC_KEYWORD || 'ART, 艺术', // 网站关键词 英文逗号隔开
 
   // 社交链接，不需要可留空白，例如 CONTACT_WEIBO:''
