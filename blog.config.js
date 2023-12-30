@@ -18,7 +18,7 @@ const BLOG = {
   CUSTOM_MENU: process.env.NEXT_PUBLIC_CUSTOM_MENU || true, // 支持Menu 类型，从3.12.0版本起，各主题将逐步支持灵活的二级菜单配置，替代了原来的Page类型，此配置是试验功能、默认关闭。
 
   AUTHOR: process.env.NEXT_PUBLIC_AUTHOR || 'NouveauDÉPART', // 您的昵称 例如 tangly1024
-  BIO: process.env.NEXT_PUBLIC_BIO || '打通中法艺术之路，欢迎关注互动', // 作者简介
+  BIO: process.env.NEXT_PUBLIC_BIO || '打通中法艺术之路，欢迎互动关注', // 作者简介
   LINK: process.env.NEXT_PUBLIC_LINK || 'https://nd.acmfc.fr', // 网站地址
   KEYWORDS: process.env.NEXT_PUBLIC_KEYWORD || '法国艺术留学咨询服务, 中法艺术交流活动, 艺术留学申请技巧, 法国艺术院校信息, 艺术生涯规划, 法国艺术实习机会, 艺术留学生活体验, 法国文化艺术课程, 留学法国艺术策展, 艺术家职业发展', // 网站关键词 英文逗号隔开
 
