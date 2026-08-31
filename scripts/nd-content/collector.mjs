@@ -93,13 +93,55 @@ export function decodeHtml(value = '') {
     .replace(/&([a-z]+);/gi, (entity, key) => named[key] ?? entity)
 }
 
+function findTagStart(lowerValue, tagName, fromIndex, closing = false) {
+  const needle = `<${closing ? '/' : ''}${tagName}`
+  let index = lowerValue.indexOf(needle, fromIndex)
+  while (index >= 0) {
+    const boundary = lowerValue[index + needle.length]
+    if (!boundary || /[\s/>]/.test(boundary)) return index
+    index = lowerValue.indexOf(needle, index + needle.length)
+  }
+  return -1
+}
+
+function findTagEnd(value, fromIndex) {
+  let quote = null
+  for (let index = fromIndex; index < value.length; index += 1) {
+    const character = value[index]
+    if (quote) {
+      if (character === quote) quote = null
+      continue
+    }
+    if (character === '"' || character === "'") quote = character
+    else if (character === '>') return index + 1
+  }
+  return -1
+}
+
+function removeRawTextElement(value, tagName) {
+  const lowerValue = value.toLowerCase()
+  let cursor = 0
+  let output = ''
+  while (cursor < value.length) {
+    const start = findTagStart(lowerValue, tagName, cursor)
+    if (start < 0) return output + value.slice(cursor)
+    output += value.slice(cursor, start)
+    const openingEnd = findTagEnd(value, start)
+    if (openingEnd < 0) return output
+    const closingStart = findTagStart(lowerValue, tagName, openingEnd, true)
+    if (closingStart < 0) return output
+    const closingEnd = findTagEnd(value, closingStart)
+    if (closingEnd < 0) return output
+    output += ' '
+    cursor = closingEnd
+  }
+  return output
+}
+
 export function plainText(value = '') {
-  return decodeHtml(
-    value
-      .replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, ' ')
-      .replace(/<style\b[^>]*>[\s\S]*?<\/style\s*>/gi, ' ')
-      .replace(/<[^>]+>/g, ' ')
-  )
+  const withoutScripts = removeRawTextElement(value, 'script')
+  const withoutStyles = removeRawTextElement(withoutScripts, 'style')
+  return decodeHtml(withoutStyles.replace(/<[^>]+>/g, ' '))
     .replace(/\s+/g, ' ')
     .trim()
 }

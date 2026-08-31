@@ -37,7 +37,7 @@ test('normalizes tracking URLs and derives stable topics', () => {
 })
 
 test('removes script and style bodies with spaced closing tags', () => {
-  const html = `Safe<script>alert('unsafe')</script ><style>.hidden{}</style >text`
+  const html = `Safe<script data-label=">">alert('unsafe')</script\t\n bar><style>.hidden{}</style >text`
   assert.equal(plainText(html), 'Safe text')
 })
 
