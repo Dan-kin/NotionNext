@@ -24,7 +24,10 @@ export default function PostHero({ post, siteInfo }) {
   const headerImage = post?.pageCover ? post.pageCover : siteInfo?.pageCover
 
   return (
-    <div id='header' className='w-full h-96 relative md:flex-shrink-0 z-10'>
+    <div
+      id='header'
+      className='relative z-10 h-[30rem] w-full sm:h-[26rem] md:h-96 md:flex-shrink-0'
+    >
       <LazyImage
         priority={true}
         src={headerImage}
@@ -33,15 +36,17 @@ export default function PostHero({ post, siteInfo }) {
 
       <header
         id='article-header-cover'
-        className='bg-black bg-opacity-70 absolute top-0 w-full h-96 py-10 flex justify-center items-center '>
-        <div className='mt-10'>
+        className='absolute inset-0 flex h-full w-full items-center justify-center bg-black bg-opacity-70 py-10'
+      >
+        <div className='mt-10 w-full max-w-5xl px-6 sm:px-10 lg:px-16'>
           <div className='mb-3 flex justify-center'>
             {post.category && (
               <>
                 <SmartLink
                   href={`/category/${post.category}`}
                   passHref
-                  legacyBehavior>
+                  legacyBehavior
+                >
                   <div className='cursor-pointer px-2 py-1 mb-2 border rounded-sm dark:border-white text-sm font-medium hover:underline duration-200 shadow-text-md text-white'>
                     {post.category}
                   </div>
@@ -51,11 +56,14 @@ export default function PostHero({ post, siteInfo }) {
           </div>
 
           {/* 文章Title */}
-          <div className='leading-snug font-bold xs:text-4xl sm:text-4xl md:text-5xl md:leading-snug text-4xl shadow-text-md flex justify-center text-center text-white'>
+          <div className='flex justify-center text-center text-3xl font-bold leading-tight text-white shadow-text-md sm:text-4xl sm:leading-snug xl:text-5xl'>
             {siteConfig('POST_TITLE_ICON') && (
-              <NotionIcon icon={post.pageIcon} className='text-4xl mx-1' />
+              <NotionIcon
+                icon={post.pageIcon}
+                className='mx-1 flex-shrink-0 text-3xl sm:text-4xl'
+              />
             )}
-            {post.title}
+            <span className='min-w-0'>{post.title}</span>
           </div>
 
           <section className='flex-wrap shadow-text-md flex text-sm justify-center mt-4 text-white dark:text-gray-400 font-light leading-8'>
@@ -65,7 +73,8 @@ export default function PostHero({ post, siteInfo }) {
                   <SmartLink
                     href={`/archive#${formatDateFmt(post?.publishDate, 'yyyy-MM')}`}
                     passHref
-                    className='pl-1 mr-2 cursor-pointer hover:underline'>
+                    className='pl-1 mr-2 cursor-pointer hover:underline'
+                  >
                     {locale.COMMON.POST_TIME}: {post?.publishDay}
                   </SmartLink>
                 </>
