@@ -70,5 +70,6 @@ jobs:
         with:
           name: nd-content-candidates-${{ github.run_number }}
           path: .nd-content-reports/
-          if-no-files-found: warn
+          if-no-files-found: error
+          include-hidden-files: true
           retention-days: 30
