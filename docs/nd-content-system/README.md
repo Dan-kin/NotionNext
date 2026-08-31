@@ -48,7 +48,13 @@ yarn nd:content:collect --source offi_exhibitions --limit-per-source 3
 
 ## 自动运行
 
-`.github/workflows/nd-content-candidates.yml` 每周一运行，也可手工触发。报告只出现在该次 Actions 的 Summary 和 artifact 中，不创建文章、不改数据库。
+`.github/workflows/nd-content-candidates.yml` 有三种运行方式：
+
+- 合并前测试：相关代码或来源配置的 Pull Request 会运行一轮真实采集，每个来源最多读取 2 个详情页，用于查看第一版候选结果。
+- 正式周更：合并到 `main` 后，每周一自动运行，每个来源默认最多读取 10 个详情页。
+- 手工复查：可在 Actions 中指定单一来源和读取上限后手工触发。
+
+报告只出现在该次 Actions 的 Summary 和 artifact 中，不创建文章、不改数据库。Pull Request 测试通过不等于自动批准内容；候选仍须按 REVIEW 清单人工确认。
 
 ## 数据边界
 

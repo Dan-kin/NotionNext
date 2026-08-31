@@ -1,6 +1,15 @@
 name: Nouveau Départ content candidates
 
 on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/nd-content-candidates.yml'
+      - 'config/nd-content-sources.json'
+      - 'scripts/nd-content/**'
+      - 'package.json'
+      - 'yarn.lock'
   workflow_dispatch:
     inputs:
       source:
@@ -19,7 +28,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: nd-content-candidates
+  group: nd-content-candidates-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -40,6 +49,9 @@ jobs:
           ND_SOURCE: ${{ inputs.source }}
           ND_LIMIT: ${{ inputs.limit_per_source || '10' }}
         run: |
+          if [ "$GITHUB_EVENT_NAME" = 'pull_request' ]; then
+            ND_LIMIT=2
+          fi
           args=(--output .nd-content-reports --limit-per-source "$ND_LIMIT")
           if [ -n "$ND_SOURCE" ]; then
             args+=(--source "$ND_SOURCE")
