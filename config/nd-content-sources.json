@@ -1,0 +1,182 @@
+{
+  "version": 2,
+  "siteUrl": "https://nd.acmfc.fr",
+  "existingContentUrl": "https://nd.acmfc.fr/archive",
+  "minimumReviewScore": 6,
+  "minimumAudienceRelevance": 1,
+  "minimumOpportunityActionability": 1,
+  "maximumUpcomingDays": 120,
+  "request": {
+    "timeoutMs": 15000,
+    "delayMs": 450,
+    "attempts": 2,
+    "retryDelayMs": 750,
+    "userAgent": "NouveauDepartEditorialResearch/1.0 (+https://nd.acmfc.fr/about-us)"
+  },
+  "sources": [
+    {
+      "id": "offi_exhibitions",
+      "name": "L'Officiel des spectacles — Expositions",
+      "homepage": "https://www.offi.fr/expositions-musees",
+      "listingUrls": [
+        "https://www.offi.fr/expositions-musees/prochainement.html",
+        "https://www.offi.fr/expositions-musees/choix-redaction.html"
+      ],
+      "active": true,
+      "sourceRole": "discovery",
+      "reliabilityScore": 1,
+      "requiresPrimaryVerification": true,
+      "defaultColumn": "本周去看",
+      "maxItems": 10,
+      "includePathPatterns": [
+        "^/expositions-musees/[^/]+-\\d+/[^/]+-\\d+\\.html$"
+      ],
+      "excludePathPatterns": [],
+      "titleSuffixes": ["L'Officiel des spectacles", "Offi"]
+    },
+    {
+      "id": "paris_que_faire",
+      "name": "Ville de Paris — Que faire à Paris",
+      "homepage": "https://www.paris.fr/quefaire",
+      "listingUrls": ["https://www.paris.fr/quefaire"],
+      "active": true,
+      "sourceRole": "official_publication",
+      "reliabilityScore": 3,
+      "requiresPrimaryVerification": false,
+      "defaultColumn": "本周去看",
+      "maxItems": 10,
+      "includePathPatterns": ["^/evenements/"],
+      "excludePathPatterns": [],
+      "titleSuffixes": ["Ville de Paris", "Paris.fr"]
+    },
+    {
+      "id": "paris_musees",
+      "name": "Paris Musées",
+      "homepage": "https://www.parismusees.paris.fr/fr",
+      "listingUrls": ["https://www.parismusees.paris.fr/fr/expositions"],
+      "active": true,
+      "sourceRole": "official_publication",
+      "reliabilityScore": 3,
+      "requiresPrimaryVerification": false,
+      "defaultColumn": "本周去看",
+      "maxItems": 10,
+      "includePathPatterns": ["^/fr/exposition/"],
+      "excludePathPatterns": [],
+      "titleSuffixes": ["Paris Musées"]
+    },
+    {
+      "id": "slash_paris",
+      "name": "Slash Paris",
+      "homepage": "https://slash-paris.com/fr",
+      "listingUrls": ["https://slash-paris.com/fr/evenements"],
+      "active": true,
+      "sourceRole": "specialist_editorial",
+      "reliabilityScore": 2,
+      "requiresPrimaryVerification": true,
+      "defaultColumn": "本周去看",
+      "maxItems": 10,
+      "includePathPatterns": ["^/fr/(evenements|exposition)/"],
+      "excludePathPatterns": [],
+      "titleSuffixes": ["Slash Paris"]
+    },
+    {
+      "id": "cnap_announcements",
+      "name": "CNAP — Annonces professionnelles",
+      "homepage": "https://www.cnap.fr/annonces",
+      "listingUrls": ["https://www.cnap.fr/annonces"],
+      "active": true,
+      "sourceRole": "official_publication",
+      "reliabilityScore": 3,
+      "requiresPrimaryVerification": false,
+      "defaultColumn": "机会雷达",
+      "maxItems": 12,
+      "includePathPatterns": ["^/annonces/"],
+      "excludePathPatterns": [],
+      "titleSuffixes": ["Cnap"]
+    },
+    {
+      "id": "on_the_move",
+      "name": "On the Move — Mobility opportunities",
+      "homepage": "https://on-the-move.org",
+      "listingUrls": ["https://on-the-move.org/news/countries"],
+      "active": true,
+      "sourceRole": "professional_network",
+      "reliabilityScore": 2,
+      "requiresPrimaryVerification": true,
+      "defaultColumn": "机会雷达",
+      "maxItems": 12,
+      "includePathPatterns": ["^/news/(?!deadlines$|countries$)[^/?]+$"],
+      "excludePathPatterns": [],
+      "includeTitleKeywords": [
+        "France",
+        "China",
+        "Europe",
+        "International",
+        "Online"
+      ],
+      "titleSuffixes": ["On the Move"]
+    },
+    {
+      "id": "institut_francais_programmes",
+      "name": "Institut français — Programmes",
+      "homepage": "https://www.institutfrancais.com/fr/programmes",
+      "listingUrls": ["https://www.institutfrancais.com/fr/programmes"],
+      "active": true,
+      "sourceRole": "official_publication",
+      "reliabilityScore": 3,
+      "requiresPrimaryVerification": false,
+      "defaultColumn": "艺术路径",
+      "maxItems": 10,
+      "includePathPatterns": ["^/fr/programme/"],
+      "excludePathPatterns": [],
+      "titleSuffixes": ["Institut français"]
+    },
+    {
+      "id": "cite_internationale_arts",
+      "name": "Cité internationale des arts",
+      "homepage": "https://www.citedesartsparis.net/fr",
+      "listingUrls": [
+        "https://www.citedesartsparis.net/fr/appels-a-candidatures"
+      ],
+      "active": false,
+      "sourceRole": "official_publication",
+      "reliabilityScore": 3,
+      "requiresPrimaryVerification": false,
+      "defaultColumn": "机会雷达",
+      "maxItems": 10,
+      "includePathPatterns": ["^/fr/[^/]+/"],
+      "excludePathPatterns": [],
+      "titleSuffixes": ["Cité internationale des arts"]
+    },
+    {
+      "id": "artagon",
+      "name": "Artagon",
+      "homepage": "https://www.artagon.org/actions/",
+      "listingUrls": ["https://www.artagon.org/actions/"],
+      "active": false,
+      "sourceRole": "organization_programmes",
+      "reliabilityScore": 2,
+      "requiresPrimaryVerification": true,
+      "defaultColumn": "机会雷达",
+      "maxItems": 8,
+      "includePathPatterns": ["^/actions/"],
+      "excludePathPatterns": [],
+      "titleSuffixes": ["Artagon"]
+    },
+    {
+      "id": "openagenda",
+      "name": "OpenAgenda",
+      "homepage": "https://openagenda.com/",
+      "listingUrls": [],
+      "active": false,
+      "sourceRole": "discovery",
+      "reliabilityScore": 1,
+      "requiresPrimaryVerification": true,
+      "defaultColumn": "本周去看",
+      "maxItems": 8,
+      "includePathPatterns": [],
+      "excludePathPatterns": [],
+      "titleSuffixes": ["OpenAgenda"]
+    }
+  ]
+}

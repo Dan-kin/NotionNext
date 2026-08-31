@@ -1,0 +1,68 @@
+name: Nouveau Départ content candidates
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/nd-content-candidates.yml'
+      - 'config/nd-content-sources.json'
+      - 'scripts/nd-content/**'
+      - 'package.json'
+      - 'yarn.lock'
+  workflow_dispatch:
+    inputs:
+      source:
+        description: Optional source id from config/nd-content-sources.json
+        required: false
+        type: string
+      limit_per_source:
+        description: Maximum detail pages per source
+        required: false
+        default: '10'
+        type: string
+permissions:
+  contents: read
+
+concurrency:
+  group: nd-content-candidates-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    name: Collect read-only candidates
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+      - run: yarn install --frozen-lockfile
+      - run: yarn nd:content:test
+      - name: Collect public metadata
+        env:
+          ND_SOURCE: ${{ inputs.source }}
+          ND_LIMIT: ${{ inputs.limit_per_source || '10' }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = 'pull_request' ]; then
+            ND_LIMIT=2
+          fi
+          args=(--output .nd-content-reports --limit-per-source "$ND_LIMIT")
+          if [ -n "$ND_SOURCE" ]; then
+            args+=(--source "$ND_SOURCE")
+          fi
+          yarn nd:content:collect "${args[@]}"
+      - name: Add public-safe result to job summary
+        if: always()
+        run: |
+          if [ -f .nd-content-reports/candidates.json ]; then
+            echo '## Nouveau Départ candidate collector' >> "$GITHUB_STEP_SUMMARY"
+            echo '' >> "$GITHUB_STEP_SUMMARY"
+            echo 'The collector completed. Candidate titles, URLs and editorial decisions are intentionally omitted because this repository is public.' >> "$GITHUB_STEP_SUMMARY"
+            jq -r '"- Sources checked: \(.totals.sources)\n- Links discovered: \(.totals.discovered)\n- Candidates collected: \(.totals.collected)\n- Candidates requiring private review: \(.totals.review)\n- Source errors: \(.totals.errors)"' .nd-content-reports/candidates.json >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Candidate collection did not produce its internal result.' >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
