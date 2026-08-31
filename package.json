@@ -50,6 +50,8 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:ci": "jest --ci --coverage --watchAll=false",
+    "nd:content:collect": "node scripts/nd-content/collect-candidates.mjs",
+    "nd:content:test": "node --test scripts/nd-content/*.test.mjs",
     "health-check": "node scripts/health-check.js",
     "validate": "yarn health-check",
     "final-validation": "node scripts/final-validation.js",

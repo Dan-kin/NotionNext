@@ -36,6 +36,7 @@ jobs:
           cache: yarn
       - run: yarn install --frozen-lockfile
       - run: yarn test --passWithNoTests
+      - run: yarn nd:content:test
 
   lockfile:
     name: Lockfile consistency

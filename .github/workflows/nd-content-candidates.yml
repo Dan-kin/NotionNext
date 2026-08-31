@@ -1,0 +1,62 @@
+name: Nouveau Départ content candidates
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: Optional source id from config/nd-content-sources.json
+        required: false
+        type: string
+      limit_per_source:
+        description: Maximum detail pages per source
+        required: false
+        default: '10'
+        type: string
+  schedule:
+    - cron: '37 5 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nd-content-candidates
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    name: Collect read-only candidates
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+      - run: yarn install --frozen-lockfile
+      - run: yarn nd:content:test
+      - name: Collect public metadata
+        env:
+          ND_SOURCE: ${{ inputs.source }}
+          ND_LIMIT: ${{ inputs.limit_per_source || '10' }}
+        run: |
+          args=(--output .nd-content-reports --limit-per-source "$ND_LIMIT")
+          if [ -n "$ND_SOURCE" ]; then
+            args+=(--source "$ND_SOURCE")
+          fi
+          yarn nd:content:collect "${args[@]}"
+      - name: Add report to job summary
+        if: always()
+        run: |
+          if [ -f .nd-content-reports/candidates.md ]; then
+            cat .nd-content-reports/candidates.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Candidate report was not generated.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nd-content-candidates-${{ github.run_number }}
+          path: .nd-content-reports/
+          if-no-files-found: warn
+          retention-days: 30
