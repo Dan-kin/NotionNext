@@ -53,7 +53,16 @@ const ART_PATH_KEYWORDS = [
 const CULTURE_KEYWORDS = [
   'art',
   'artiste',
+  'artistic',
+  'arts plastiques',
+  'arts visuels',
+  'choreographer',
+  'choreography',
+  'cinema',
+  'creation',
+  'curator',
   'culture',
+  'dance',
   'danse',
   'design',
   'exposition',
@@ -66,6 +75,7 @@ const CULTURE_KEYWORDS = [
   'photographie',
   'spectacle',
   'theatre',
+  'visual arts',
   '展览',
   '文化',
   '艺术'
@@ -328,7 +338,7 @@ function humanDates(html, title, description) {
   const frenchMonths = Object.keys(FRENCH_MONTHS).join('|')
   const range = text.match(
     new RegExp(
-      `(\\d{1,2})\\s+(${frenchMonths})(?:\\s+(\\d{4}))?\\s*(?:→|au|a|-|–)\\s*(\\d{1,2})\\s+(${frenchMonths})\\s+(\\d{4})`,
+      `(\\d{1,2})(?:er)?\\s+(${frenchMonths})(?:\\s+(\\d{4}))?\\s*(?:→|au|a|-|–)\\s*(\\d{1,2})(?:er)?\\s+(${frenchMonths})\\s+(\\d{4})`,
       'i'
     )
   )
@@ -347,14 +357,17 @@ function humanDates(html, title, description) {
   if (containsAny(opportunityText, OPPORTUNITY_KEYWORDS)) {
     const frenchDeadlineContext = text.match(
       new RegExp(
-        `(?:date limite|candidatures?[^.]{0,50}(?:jusqu|avant)|deadline)[^.]{0,220}`,
+        `(?:date limite|candidatures?[^.]{0,80}(?:jusqu|avant)|deposez[^.]{0,80}jusqu|deadline)[^.]{0,220}`,
         'i'
       )
     )?.[0]
     const frenchDates = frenchDeadlineContext
       ? [
           ...frenchDeadlineContext.matchAll(
-            new RegExp(`(\\d{1,2})\\s+(${frenchMonths})\\s+(\\d{4})`, 'gi')
+            new RegExp(
+              `(\\d{1,2})(?:er)?\\s+(${frenchMonths})\\s+(\\d{4})`,
+              'gi'
+            )
           )
         ].map(match =>
           calendarDate(match[3], FRENCH_MONTHS[match[2]], match[1])
@@ -364,16 +377,18 @@ function humanDates(html, title, description) {
       deadline = frenchDates.sort().at(-1)
     } else {
       const englishMonths = Object.keys(ENGLISH_MONTHS).join('|')
-      const englishDeadlineContext = text.match(/deadline[^.]{0,220}/i)?.[0]
-      const englishDates = englishDeadlineContext
-        ? [
-            ...englishDeadlineContext.matchAll(
-              new RegExp(`(\\d{1,2})\\s+(${englishMonths})\\s+(\\d{4})`, 'gi')
-            )
-          ].map(match =>
-            calendarDate(match[3], ENGLISH_MONTHS[match[2]], match[1])
+      const englishDeadlineContexts = [
+        ...text.matchAll(/deadline[^.]{0,220}/gi)
+      ].map(match => match[0])
+      const englishDates = englishDeadlineContexts.flatMap(context =>
+        [
+          ...context.matchAll(
+            new RegExp(`(\\d{1,2})\\s+(${englishMonths})\\s+(\\d{4})`, 'gi')
           )
-        : []
+        ].map(match =>
+          calendarDate(match[3], ENGLISH_MONTHS[match[2]], match[1])
+        )
+      )
       if (englishDates.length > 0) {
         deadline = englishDates.sort().at(-1)
       }
@@ -605,32 +620,54 @@ export function extractExistingTitles(html, archiveUrl) {
 }
 
 export async function fetchHtml(url, request = {}) {
-  const controller = new AbortController()
-  const timeout = setTimeout(
-    () => controller.abort(),
-    request.timeoutMs || 15000
-  )
-  try {
-    const response = await fetch(url, {
-      signal: controller.signal,
-      redirect: 'follow',
-      headers: {
-        accept: 'text/html,application/xhtml+xml',
-        'accept-language': 'fr-FR,fr;q=0.9,en;q=0.7',
-        'user-agent':
-          request.userAgent ||
-          'NouveauDepartEditorialResearch/1.0 (+https://nd.acmfc.fr)'
+  const attempts = Math.max(1, Number(request.attempts || 1))
+  let lastError
+
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    const controller = new AbortController()
+    const timeout = setTimeout(
+      () => controller.abort(),
+      request.timeoutMs || 15000
+    )
+    try {
+      const response = await fetch(url, {
+        signal: controller.signal,
+        redirect: 'follow',
+        headers: {
+          accept: 'text/html,application/xhtml+xml',
+          'accept-language': 'fr-FR,fr;q=0.9,en;q=0.7',
+          'user-agent':
+            request.userAgent ||
+            'NouveauDepartEditorialResearch/1.0 (+https://nd.acmfc.fr)'
+        }
+      })
+      if (!response.ok) {
+        const error = new Error(`HTTP ${response.status}`)
+        error.retryable =
+          response.status === 408 ||
+          response.status === 429 ||
+          response.status >= 500
+        throw error
       }
-    })
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    const contentType = response.headers.get('content-type') || ''
-    if (!contentType.includes('html')) {
-      throw new Error(`Unsupported content type: ${contentType || 'unknown'}`)
+      const contentType = response.headers.get('content-type') || ''
+      if (!contentType.includes('html')) {
+        const error = new Error(
+          `Unsupported content type: ${contentType || 'unknown'}`
+        )
+        error.retryable = false
+        throw error
+      }
+      return await response.text()
+    } catch (error) {
+      lastError = error
+      if (error.retryable === false || attempt === attempts) throw error
+      await wait(Number(request.retryDelayMs || 500) * attempt)
+    } finally {
+      clearTimeout(timeout)
     }
-    return await response.text()
-  } finally {
-    clearTimeout(timeout)
   }
+
+  throw lastError
 }
 
 function wait(milliseconds) {
@@ -758,18 +795,20 @@ export async function collectAll(config, options = {}) {
     sourceResults.flatMap(result => result.candidates),
     existingTitles
   )
-  const reviewCandidates = candidates
-    .filter(
-      candidate =>
-        !candidate.expired &&
-        !candidate.duplicateOf &&
-        !candidate.duplicateExisting &&
-        candidate.score >= config.minimumReviewScore
+  const evaluatedCandidates = candidates.map(candidate => ({
+    ...candidate,
+    exclusionReasons: reviewExclusionReasons(
+      candidate,
+      config,
+      options.now || new Date()
     )
+  }))
+  const reviewCandidates = evaluatedCandidates
+    .filter(candidate => candidate.exclusionReasons.length === 0)
     .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title, 'fr'))
 
-  const excludedCandidates = candidates.filter(
-    candidate => !reviewCandidates.some(review => review.id === candidate.id)
+  const excludedCandidates = evaluatedCandidates.filter(
+    candidate => candidate.exclusionReasons.length > 0
   )
 
   return {
@@ -802,6 +841,42 @@ export async function collectAll(config, options = {}) {
   }
 }
 
+export function reviewExclusionReasons(candidate, config, now = new Date()) {
+  const reasons = []
+  if (candidate.expired) reasons.push('expired')
+  if (candidate.duplicateOf) reasons.push('duplicate_in_run')
+  if (candidate.duplicateExisting) reasons.push('duplicate_existing')
+  if (candidate.score < config.minimumReviewScore) reasons.push('below_score')
+
+  const audienceRelevance = candidate.scoreBreakdown?.audienceRelevance || 0
+  if (audienceRelevance < (config.minimumAudienceRelevance || 0)) {
+    reasons.push('low_audience_relevance')
+  }
+
+  const actionability = candidate.scoreBreakdown?.actionability || 0
+  if (
+    candidate.column === '机会雷达' &&
+    actionability < (config.minimumOpportunityActionability || 0)
+  ) {
+    reasons.push('not_actionable_opportunity')
+  }
+
+  if (
+    candidate.column === '本周去看' &&
+    candidate.startDate &&
+    config.maximumUpcomingDays
+  ) {
+    const start = new Date(candidate.startDate)
+    const daysUntilStart =
+      (start.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)
+    if (daysUntilStart > config.maximumUpcomingDays) {
+      reasons.push('too_far_future')
+    }
+  }
+
+  return reasons
+}
+
 function markdownText(value = '') {
   return plainText(String(value))
     .replace(/\\/g, '\\\\')
@@ -827,13 +902,17 @@ function shortDate(value) {
   return value ? parisDateKey(value) || '待核实' : '待核实'
 }
 
+function reviewCode(candidate) {
+  return `C-${candidate.id.slice(0, 6).toUpperCase()}`
+}
+
 export function createMarkdownReport(report) {
   const lines = [
     '# Nouveau Départ 候选内容 REVIEW',
     '',
     `生成时间：${report.generatedAt}`,
     '',
-    `本次检查 ${report.totals.sources} 个来源，发现 ${report.totals.discovered} 个链接，采集 ${report.totals.collected} 条；${report.totals.review} 条进入 REVIEW，${report.totals.excluded} 条因低分、过期或重复被排除。`,
+    `本次检查 ${report.totals.sources} 个来源，发现 ${report.totals.discovered} 个链接，采集 ${report.totals.collected} 条；${report.totals.review} 条进入 REVIEW，${report.totals.excluded} 条因相关性、行动性、时间窗口、低分、过期或重复被排除。`,
     '',
     '> 本报告不是发布队列。日期、地点、资格、费用和截止时间必须按 REVIEW 清单核验；通过后只建立 Notion Draft。',
     ''
@@ -853,14 +932,14 @@ export function createMarkdownReport(report) {
     if (candidates.length === 0) continue
     lines.push(`## ${column}`, '')
     lines.push(
-      '| 分数 | 候选 | 来源 | 日期/截止 | 地点 | 核验 |',
-      '| ---: | --- | --- | --- | --- | --- |'
+      '| 编号 | 分数 | 候选 | 来源 | 日期/截止 | 地点 | 核验 |',
+      '| --- | ---: | --- | --- | --- | --- | --- |'
     )
     for (const candidate of candidates) {
       const relevantDate =
         candidate.deadline || candidate.startDate || candidate.endDate
       lines.push(
-        `| ${candidate.score} | [${markdownText(candidate.title)}](${candidate.url}) | ${markdownText(candidate.sourceName)} | ${shortDate(relevantDate)} | ${markdownText(candidate.location || '待核实')} | ${candidate.requiresPrimaryVerification ? '须回到主办方官网' : '关键字段人工复核'} |`
+        `| ${reviewCode(candidate)} | ${candidate.score} | [${markdownText(candidate.title)}](${candidate.url}) | ${markdownText(candidate.sourceName)} | ${shortDate(relevantDate)} | ${markdownText(candidate.location || '待核实')} | ${candidate.requiresPrimaryVerification ? '须回到主办方官网' : '关键字段人工复核'} |`
       )
     }
     lines.push('')

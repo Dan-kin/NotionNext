@@ -50,11 +50,22 @@ yarn nd:content:collect --source offi_exhibitions --limit-per-source 3
 
 `.github/workflows/nd-content-candidates.yml` 有三种运行方式：
 
-- 合并前测试：相关代码或来源配置的 Pull Request 会运行一轮真实采集，每个来源最多读取 2 个详情页，用于查看第一版候选结果。
-- 正式周更：合并到 `main` 后，每周一自动运行，每个来源默认最多读取 10 个详情页。
-- 手工复查：可在 Actions 中指定单一来源和读取上限后手工触发。
+- 合并前测试：相关代码或来源配置的 Pull Request 会运行一轮真实采集，每个来源最多读取 2 个详情页，用于验证采集器。
+- 正式周更：合并到 `main` 后，启用绑定当前私密 Codex 任务的每周自动化；每个来源默认最多读取 10 个详情页。
+- 手工复查：可在 Actions 中指定单一来源和读取上限后手工触发技术检查。
 
-报告只出现在该次 Actions 的 Summary 和 artifact 中，不创建文章、不改数据库。Pull Request 测试通过不等于自动批准内容；候选仍须按 REVIEW 清单人工确认。
+GitHub 仓库是公开的，因此 Actions 只显示来源数、发现数、候选数和错误数，不显示或上传候选标题、URL、报告及审核决定。完整报告只在私密 Codex 任务中展示，不创建文章、不改数据库。Pull Request 测试通过不等于自动批准内容；候选仍须按 REVIEW 清单人工确认。
+
+## 私密批准指令
+
+每周候选在当前 Codex 任务中以 URL 哈希生成的稳定编号（如 `C-A1B2C3`）展示。Dan 可直接回复：
+
+- `批准 C-A1B2C3 C-D4E5F6`：允许进入下一步人工建 Notion `Draft`，但不代表公开发布。
+- `退回 C-A1B2C3：原因`：本轮排除并记录理由。
+- `全部暂缓`：本轮不建稿。
+- `批准发布 C-A1B2C3`：仅在已检查 Notion Draft 后，才允许另行执行 `Published` 变更。
+
+任何未明确编号的“可以”“看起来不错”都不视为批准。GitHub PR approval 只批准代码合并，不批准候选内容。
 
 ## 数据边界
 

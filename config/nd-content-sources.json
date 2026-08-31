@@ -1,11 +1,16 @@
 {
-  "version": 1,
+  "version": 2,
   "siteUrl": "https://nd.acmfc.fr",
   "existingContentUrl": "https://nd.acmfc.fr/archive",
   "minimumReviewScore": 6,
+  "minimumAudienceRelevance": 1,
+  "minimumOpportunityActionability": 1,
+  "maximumUpcomingDays": 120,
   "request": {
     "timeoutMs": 15000,
     "delayMs": 450,
+    "attempts": 2,
+    "retryDelayMs": 750,
     "userAgent": "NouveauDepartEditorialResearch/1.0 (+https://nd.acmfc.fr/about-us)"
   },
   "sources": [
@@ -120,7 +125,7 @@
       "sourceRole": "official_publication",
       "reliabilityScore": 3,
       "requiresPrimaryVerification": false,
-      "defaultColumn": "机会雷达",
+      "defaultColumn": "艺术路径",
       "maxItems": 10,
       "includePathPatterns": ["^/fr/programme/"],
       "excludePathPatterns": [],

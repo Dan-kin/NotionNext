@@ -21,9 +21,6 @@ on:
         required: false
         default: '10'
         type: string
-  schedule:
-    - cron: '37 5 * * 1'
-
 permissions:
   contents: read
 
@@ -57,19 +54,15 @@ jobs:
             args+=(--source "$ND_SOURCE")
           fi
           yarn nd:content:collect "${args[@]}"
-      - name: Add report to job summary
+      - name: Add public-safe result to job summary
         if: always()
         run: |
-          if [ -f .nd-content-reports/candidates.md ]; then
-            cat .nd-content-reports/candidates.md >> "$GITHUB_STEP_SUMMARY"
+          if [ -f .nd-content-reports/candidates.json ]; then
+            echo '## Nouveau Départ candidate collector' >> "$GITHUB_STEP_SUMMARY"
+            echo '' >> "$GITHUB_STEP_SUMMARY"
+            echo 'The collector completed. Candidate titles, URLs and editorial decisions are intentionally omitted because this repository is public.' >> "$GITHUB_STEP_SUMMARY"
+            jq -r '"- Sources checked: \(.totals.sources)\n- Links discovered: \(.totals.discovered)\n- Candidates collected: \(.totals.collected)\n- Candidates requiring private review: \(.totals.review)\n- Source errors: \(.totals.errors)"' .nd-content-reports/candidates.json >> "$GITHUB_STEP_SUMMARY"
           else
-            echo 'Candidate report was not generated.' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Candidate collection did not produce its internal result.' >> "$GITHUB_STEP_SUMMARY"
+            exit 1
           fi
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: nd-content-candidates-${{ github.run_number }}
-          path: .nd-content-reports/
-          if-no-files-found: error
-          include-hidden-files: true
-          retention-days: 30

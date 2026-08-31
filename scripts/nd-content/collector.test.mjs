@@ -9,8 +9,10 @@ import {
   deduplicateCandidates,
   extractDocumentMeta,
   extractSourceLinks,
+  fetchHtml,
   normalizeUrl,
   plainText,
+  reviewExclusionReasons,
   scoreCandidate
 } from './collector.mjs'
 
@@ -98,13 +100,27 @@ test('uses the latest date when an opportunity has multiple deadlines', () => {
     <html><head>
       <meta property="og:title" content="International art residency open call">
       <meta name="description" content="Open call for artists.">
-    </head><body><p>Deadline: 30 June 2026, 31 December 2026.</p></body></html>
+    </head><body>
+      <nav><a href="/deadlines">Deadlines page</a></nav>
+      <p>Deadline: 30 June 2026, 31 December 2026.</p>
+    </body></html>
   `
   const meta = extractDocumentMeta(html, 'https://example.org/open-call', {
     ...source,
     titleSuffixes: []
   })
   assert.equal(meta.deadline, '2026-12-31T12:00:00.000Z')
+})
+
+test('classifies professional cultural programmes as an art pathway', () => {
+  const candidate = {
+    title: 'FOCUS arts visuels',
+    description: 'Un programme artistique pour les professionnels étrangers.'
+  }
+  assert.equal(
+    classifyCandidate(candidate, { ...source, defaultColumn: '艺术路径' }),
+    '艺术路径'
+  )
 })
 
 test('classifies and scores a China-France exhibition deterministically', () => {
@@ -157,4 +173,83 @@ test('marks URL, topic and existing-site duplicates without deleting data', () =
   assert.equal(results[1].duplicateOf, 'a')
   assert.equal(results[2].duplicateOf, 'a')
   assert.equal(results[3].duplicateExisting, true)
+})
+
+test('excludes non-cultural, distant and non-actionable weekly candidates', () => {
+  const config = {
+    minimumReviewScore: 6,
+    minimumAudienceRelevance: 1,
+    minimumOpportunityActionability: 1,
+    maximumUpcomingDays: 120
+  }
+  const base = {
+    expired: false,
+    duplicateOf: null,
+    duplicateExisting: false,
+    score: 8
+  }
+
+  assert.deepEqual(
+    reviewExclusionReasons(
+      {
+        ...base,
+        column: '本周去看',
+        startDate: '2026-09-06T12:00:00.000Z',
+        scoreBreakdown: { audienceRelevance: 0, actionability: 2 }
+      },
+      config,
+      new Date('2026-08-31T12:00:00.000Z')
+    ),
+    ['low_audience_relevance']
+  )
+
+  assert.deepEqual(
+    reviewExclusionReasons(
+      {
+        ...base,
+        column: '本周去看',
+        startDate: '2027-09-15T12:00:00.000Z',
+        scoreBreakdown: { audienceRelevance: 1, actionability: 1 }
+      },
+      config,
+      new Date('2026-08-31T12:00:00.000Z')
+    ),
+    ['too_far_future']
+  )
+
+  assert.deepEqual(
+    reviewExclusionReasons(
+      {
+        ...base,
+        column: '机会雷达',
+        startDate: null,
+        scoreBreakdown: { audienceRelevance: 1, actionability: 0 }
+      },
+      config,
+      new Date('2026-08-31T12:00:00.000Z')
+    ),
+    ['not_actionable_opportunity']
+  )
+})
+
+test('retries a transient fetch failure', async () => {
+  const originalFetch = globalThis.fetch
+  let calls = 0
+  globalThis.fetch = async () => {
+    calls += 1
+    if (calls === 1) throw new TypeError('fetch failed')
+    return new Response('<html><body>ok</body></html>', {
+      headers: { 'content-type': 'text/html; charset=utf-8' }
+    })
+  }
+  try {
+    const html = await fetchHtml('https://example.org', {
+      attempts: 2,
+      retryDelayMs: 0
+    })
+    assert.match(html, /ok/)
+    assert.equal(calls, 2)
+  } finally {
+    globalThis.fetch = originalFetch
+  }
 })
