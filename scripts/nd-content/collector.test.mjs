@@ -10,6 +10,7 @@ import {
   extractDocumentMeta,
   extractSourceLinks,
   normalizeUrl,
+  plainText,
   scoreCandidate
 } from './collector.mjs'
 
@@ -33,6 +34,11 @@ test('normalizes tracking URLs and derives stable topics', () => {
     canonicalTopic('L’exposition : Éclats de Chine !'),
     'exposition eclats chine'
   )
+})
+
+test('removes script and style bodies with spaced closing tags', () => {
+  const html = `Safe<script>alert('unsafe')</script ><style>.hidden{}</style >text`
+  assert.equal(plainText(html), 'Safe text')
 })
 
 test('extracts only matching, unique source links from a fixed fixture', async () => {
