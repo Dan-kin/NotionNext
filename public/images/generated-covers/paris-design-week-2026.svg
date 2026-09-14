@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Abstract modular design forms">
+  <defs><linearGradient id="wall" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eee8dc"/><stop offset="1" stop-color="#c6d2dd"/></linearGradient><linearGradient id="blue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#203b76"/><stop offset="1" stop-color="#527fa0"/></linearGradient></defs>
+  <rect width="1600" height="900" fill="url(#wall)"/><path d="M0 710 L1600 520 L1600 900 L0 900Z" fill="#272b31" opacity=".92"/>
+  <g stroke="#272b31" stroke-width="12"><rect x="200" y="220" width="360" height="290" rx="18" fill="#c3694d"/><rect x="600" y="150" width="280" height="440" rx="140" fill="url(#blue)"/><path d="M990 610 L1190 170 L1390 610Z" fill="#e1a94d"/><circle cx="1110" cy="360" r="95" fill="#f5efe4"/></g>
+  <g fill="none" stroke="#fff" stroke-width="3" opacity=".6"><path d="M80 120 H1520"/><path d="M80 260 H1520"/><path d="M80 400 H1520"/><path d="M80 540 H1520"/></g>
+</svg>
