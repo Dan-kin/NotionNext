@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Abstract ink dialogue">
+  <defs><linearGradient id="paper" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f4eee2"/><stop offset="1" stop-color="#dfe7eb"/></linearGradient><filter id="soft"><feGaussianBlur stdDeviation="18"/></filter></defs>
+  <rect width="1600" height="900" fill="url(#paper)"/><ellipse cx="830" cy="440" rx="500" ry="210" fill="#718da3" opacity=".22" filter="url(#soft)"/>
+  <path d="M90 690 C290 520 310 300 560 390 S760 730 930 470 S1160 130 1510 230" fill="none" stroke="#172c3a" stroke-width="72" stroke-linecap="round" opacity=".88"/>
+  <path d="M200 210 C420 360 500 520 700 390 S930 190 1370 650" fill="none" stroke="#bd5541" stroke-width="18" stroke-linecap="round" opacity=".8"/>
+  <path d="M420 130 C600 250 830 240 1040 650" fill="none" stroke="#233f91" stroke-width="28" stroke-linecap="round" opacity=".7"/>
+  <g fill="#172c3a"><circle cx="560" cy="390" r="20"/><circle cx="930" cy="470" r="20"/></g>
+</svg>

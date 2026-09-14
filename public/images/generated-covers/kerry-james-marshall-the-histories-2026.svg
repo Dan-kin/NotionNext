@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Abstract monumental figures in a gallery">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#131a45"/><stop offset="1" stop-color="#481f33"/></linearGradient></defs>
+  <rect width="1600" height="900" fill="url(#g)"/><rect x="110" y="110" width="1380" height="680" fill="#203c72" opacity=".45"/>
+  <g fill="#e2b45d"><circle cx="470" cy="390" r="145"/><path d="M300 760 C310 510 630 510 660 760Z"/></g>
+  <g fill="#b84c3d"><circle cx="850" cy="330" r="115"/><path d="M700 760 C710 500 990 500 1010 760Z"/></g>
+  <g fill="#f0e2c9"><circle cx="1190" cy="420" r="165"/><path d="M1000 760 C1030 520 1350 520 1380 760Z"/></g>
+  <g fill="none" stroke="#f0e2c9" stroke-width="8" opacity=".55"><path d="M180 190 H1420"/><path d="M180 250 H1420"/><path d="M180 310 H1420"/></g>
+</svg>
