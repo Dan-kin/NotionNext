@@ -59,6 +59,18 @@ const BLOG = {
 
   // 自定义菜单
   CUSTOM_MENU: process.env.NEXT_PUBLIC_CUSTOM_MENU || true, // 支持Menu类型的菜单，替代了3.12版本前的Page类型
+  CUSTOM_MENU_ROUTE_OVERRIDES: {
+    留学与教育: '/category/留学与教育',
+    职业路径: '/category/职业路径'
+  },
+  CUSTOM_MENU_EXTRA_ITEMS: [
+    {
+      name: '展览活动',
+      href: '/category/展览活动',
+      icon: 'fas fa-images',
+      before: '关于我们'
+    }
+  ],
 
   // 文章列表相关设置
   CAN_COPY: process.env.NEXT_PUBLIC_CAN_COPY || true, // 是否允许复制页面内容，默认允许；可被文章属性 CAN_COPY / ext.CAN_COPY 覆盖。
