@@ -61,14 +61,54 @@ const BLOG = {
   CUSTOM_MENU: process.env.NEXT_PUBLIC_CUSTOM_MENU || true, // 支持Menu类型的菜单，替代了3.12版本前的Page类型
   CUSTOM_MENU_ROUTE_OVERRIDES: {
     留学与教育: '/category/留学与教育',
-    职业路径: '/category/职业路径'
+    职业路径: '/category/职业路径',
+    文化互动: '/category/文化互动'
+  },
+  // 顶部菜单用读者能理解的入口名称，不改动 Notion 内既有分类名称。
+  CUSTOM_MENU_LABEL_OVERRIDES: {
+    留学与教育: '学习与进修',
+    职业路径: '机会与职业',
+    文化互动: '中法文化'
   },
   CUSTOM_MENU_EXTRA_ITEMS: [
     {
-      name: '展览活动',
+      name: '看展与活动',
       href: '/category/展览活动',
       icon: 'fas fa-images',
-      before: '关于我们'
+      target: '_self'
+    }
+  ],
+  CUSTOM_MENU_ORDER: [
+    '首页',
+    '看展与活动',
+    '机会与职业',
+    '中法文化',
+    '学习与进修',
+    '关于我们'
+  ],
+
+  // 首页“按目的浏览”区块：栏目名称仍对应 Notion 的现有 category 属性。
+  HOME_EXPLORE_ENTRIES: [
+    {
+      title: '看展与活动',
+      description: '展览、博物馆、设计与文化现场',
+      category: '展览活动',
+      href: '/category/展览活动',
+      icon: 'fas fa-images'
+    },
+    {
+      title: '机会与职业',
+      description: '驻留、资助、征集与合作机会',
+      category: '职业路径',
+      href: '/category/职业路径',
+      icon: 'fas fa-compass'
+    },
+    {
+      title: '中法文化',
+      description: '人物、机构、艺术史与文化连接',
+      category: '文化互动',
+      href: '/category/文化互动',
+      icon: 'fas fa-bridge'
     }
   ],
 
