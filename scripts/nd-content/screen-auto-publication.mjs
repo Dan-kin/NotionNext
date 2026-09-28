@@ -3,25 +3,30 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { autoPublicationBlockers } from './auto-publish-eligibility.mjs'
+import { autoPublicationBlockers, buildExistingIndex } from './auto-publish-eligibility.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const reportPath = process.argv[2] || path.join(root, '.nd-content-reports/candidates.json')
 const outputPath = process.argv[3] || path.join(root, '.nd-content-reports/auto-publication-screen.json')
+const indexPath = process.argv[4]
 const [report, config] = await Promise.all([
   readFile(reportPath, 'utf8').then(JSON.parse),
   readFile(path.join(root, 'config/nd-content-sources.json'), 'utf8').then(JSON.parse)
 ])
 const sources = new Map(config.sources.map(source => [source.id, source]))
+const now = new Date(report.generatedAt)
+const existingIndex = indexPath
+  ? buildExistingIndex(JSON.parse(await readFile(indexPath, 'utf8')), now)
+  : {}
 
-// The current Notion database has no source URL property. Until a complete,
-// live Notion URL index is available, duplicate checks fail closed.
+// No live Notion index means every candidate remains held.
 const screened = report.reviewCandidates.map(candidate => ({
   id: `C-${candidate.id.slice(0, 6).toUpperCase()}`,
   url: candidate.url,
   title: candidate.title,
   blockers: autoPublicationBlockers(candidate, sources.get(candidate.sourceId), {
-    now: new Date(report.generatedAt)
+    now,
+    ...existingIndex
   })
 }))
 const output = {
