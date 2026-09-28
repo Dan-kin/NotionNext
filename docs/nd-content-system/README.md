@@ -75,3 +75,5 @@ GitHub 仓库是公开的，因此 Actions 只显示来源数、发现数、候�
 - 如果来源阻止自动访问，系统记录错误并跳过，不绕过访问限制。
 
 详细规则见 [SOURCE-WHITELIST.md](./SOURCE-WHITELIST.md)、[EDITORIAL-RULES.md](./EDITORIAL-RULES.md) 和 [REVIEW-CHECKLIST.md](./REVIEW-CHECKLIST.md)。
+
+自动发布的严格门槛与启用条件见 [AUTO-PUBLICATION-STANDARD.md](./AUTO-PUBLICATION-STANDARD.md)。目前为只读筛选试验，尚未启用 Notion 写入。

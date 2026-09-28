@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Nouveau Départ original editorial cover for a cultural event brief">
+  <defs>
+    <linearGradient id="paper" x2="1" y2="1"><stop stop-color="#f8f2e9"/><stop offset="1" stop-color="#e9ddce"/></linearGradient>
+    <linearGradient id="accent" x2="1" y2="1"><stop stop-color="#7a4658"/><stop offset="1" stop-color="#b77671"/></linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#paper)"/>
+  <rect x="80" y="72" width="1440" height="756" fill="none" stroke="#8c6c59" stroke-width="2" opacity=".65"/>
+  <circle cx="1200" cy="448" r="292" fill="url(#accent)"/>
+  <circle cx="1200" cy="448" r="204" fill="none" stroke="#e9d8ca" stroke-width="3" opacity=".75"/>
+  <path d="M1050 532c50-130 116-254 183-309 23 142 99 310 182 438-131-6-248-47-365-129Z" fill="#d6ac98" opacity=".7"/>
+  <path d="M1035 617c144-52 290-39 437 7" fill="none" stroke="#f4e9db" stroke-width="14" opacity=".7"/>
+  <text x="152" y="255" fill="#7a4658" font-family="Georgia,serif" font-size="29" letter-spacing="8">NOUVEAU DÉPART</text>
+  <text x="146" y="425" fill="#342d35" font-family="Georgia,serif" font-size="98">À voir cette semaine</text>
+  <path d="M150 488h500" stroke="#8c6c59" stroke-width="3"/>
+  <text x="152" y="563" fill="#7a4658" font-family="Arial,sans-serif" font-size="34" letter-spacing="4">ART · CULTURE · PARIS</text>
+  <text x="152" y="755" fill="#6d655f" font-family="Arial,sans-serif" font-size="24">Original editorial illustration · Not an event photograph</text>
+</svg>

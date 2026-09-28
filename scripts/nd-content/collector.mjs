@@ -438,17 +438,19 @@ export function extractDocumentMeta(html, pageUrl, source, fallbackTitle = '') {
       ])
   ).slice(0, 600)
   const fallbackDates = humanDates(html, title, description)
-  const startDate = isoDate(
+  const structuredStart =
     preferred?.startDate ||
-      metaContent(html, ['event:start_time']) ||
-      itemPropContent(html, 'startDate') ||
-      fallbackDates.startDate
+    metaContent(html, ['event:start_time']) ||
+    itemPropContent(html, 'startDate')
+  const structuredEnd =
+    preferred?.endDate ||
+    metaContent(html, ['event:end_time']) ||
+    itemPropContent(html, 'endDate')
+  const startDate = isoDate(
+    structuredStart || fallbackDates.startDate
   )
   const endDate = isoDate(
-    preferred?.endDate ||
-      metaContent(html, ['event:end_time']) ||
-      itemPropContent(html, 'endDate') ||
-      fallbackDates.endDate
+    structuredEnd || fallbackDates.endDate
   )
   const deadline = isoDate(
     preferred?.validThrough ||
@@ -465,6 +467,7 @@ export function extractDocumentMeta(html, pageUrl, source, fallbackTitle = '') {
     startDate,
     endDate,
     deadline,
+    dateEvidence: structuredStart && structuredEnd ? 'structured' : 'text',
     location: locationText(preferred?.location) || microdataLocation(html),
     schemaType: preferred?.['@type'] || null
   }
@@ -702,6 +705,7 @@ export async function collectSource(source, options = {}) {
 
   const candidates = []
   for (const link of [...discovered.values()].slice(0, maxItems)) {
+    let detailFetched = false
     let meta = {
       title: link.title,
       description: '',
@@ -709,6 +713,7 @@ export async function collectSource(source, options = {}) {
       startDate: null,
       endDate: null,
       deadline: null,
+      dateEvidence: null,
       location: '',
       schemaType: null
     }
@@ -716,6 +721,7 @@ export async function collectSource(source, options = {}) {
       await wait(request.delayMs)
       const html = await fetcher(link.url, request)
       meta = extractDocumentMeta(html, link.url, source, link.title)
+      detailFetched = true
     } catch (error) {
       errors.push({ url: link.url, error: error.message })
     }
@@ -729,11 +735,14 @@ export async function collectSource(source, options = {}) {
       sourceRole: source.sourceRole,
       requiresPrimaryVerification: source.requiresPrimaryVerification,
       url,
+      listingTitle: link.title,
+      detailFetched,
       title: meta.title || link.title,
       description: meta.description,
       startDate: meta.startDate,
       endDate: meta.endDate,
       deadline: meta.deadline,
+      dateEvidence: meta.dateEvidence,
       location: meta.location,
       schemaType: meta.schemaType,
       discoveredAt: options.now?.toISOString() || new Date().toISOString()

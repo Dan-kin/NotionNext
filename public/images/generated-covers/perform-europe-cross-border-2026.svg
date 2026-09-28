@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Abstract connected stage routes">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#101c3d"/><stop offset="1" stop-color="#243f68"/></linearGradient><radialGradient id="glow"><stop stop-color="#f5b86a" stop-opacity=".9"/><stop offset="1" stop-color="#f5b86a" stop-opacity="0"/></radialGradient></defs>
+  <rect width="1600" height="900" fill="url(#bg)"/><circle cx="1220" cy="210" r="300" fill="url(#glow)"/>
+  <g fill="none" stroke="#f6c27b" stroke-width="5" opacity=".8"><path d="M130 690 C380 380 510 780 760 450 S1120 130 1450 320"/><path d="M80 260 C340 180 410 490 710 260 S1090 420 1510 630"/><path d="M230 780 C520 550 920 610 1360 140"/></g>
+  <g fill="#f5b86a"><circle cx="130" cy="690" r="14"/><circle cx="760" cy="450" r="14"/><circle cx="1450" cy="320" r="14"/></g>
+  <g fill="#f4eee3" opacity=".92"><path d="M625 625 l70 -150 70 150 z"/><path d="M1010 560 l58 -125 58 125 z"/><path d="M300 490 l48 -105 48 105 z"/></g>
+</svg>

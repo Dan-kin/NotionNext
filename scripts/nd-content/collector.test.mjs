@@ -77,6 +77,7 @@ test('extracts event JSON-LD without copying the page body', async () => {
     "Une exposition d'art contemporain franco-chinoise."
   )
   assert.equal(meta.startDate, '2027-03-02T09:00:00.000Z')
+  assert.equal(meta.dateEvidence, 'structured')
   assert.match(meta.location, /Musée exemple/)
 })
 
@@ -93,6 +94,7 @@ test('extracts a visible French event date range without structured dates', () =
   })
   assert.equal(meta.startDate, '2026-09-03T12:00:00.000Z')
   assert.equal(meta.endDate, '2026-10-24T12:00:00.000Z')
+  assert.equal(meta.dateEvidence, 'text')
 })
 
 test('uses the latest date when an opportunity has multiple deadlines', () => {

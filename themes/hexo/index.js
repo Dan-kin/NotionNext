@@ -176,13 +176,90 @@ const LayoutBase = props => {
 }
 
 /**
+ * 首页的读者导览：展示名称可独立于 Notion category 演进，
+ * 让访客先按目的进入内容，而不必理解后台分类规则。
+ */
+const HomeExploreSection = ({ latestPosts = [] }) => {
+  const entries = siteConfig('HOME_EXPLORE_ENTRIES', [], CONFIG)
+
+  if (!Array.isArray(entries) || entries.length === 0) {
+    return null
+  }
+
+  return (
+    <section aria-labelledby='home-explore-heading' className='px-2 pt-8'>
+      <div className='mb-4 flex items-end justify-between gap-4'>
+        <div>
+          <p className='text-xs font-medium uppercase tracking-[0.2em] text-indigo-600 dark:text-gray-400'>
+            Nouveau Départ
+          </p>
+          <h2
+            id='home-explore-heading'
+            className='mt-1 text-2xl font-semibold text-gray-800 dark:text-gray-100'>
+            按目的浏览
+          </h2>
+        </div>
+        <span className='hidden text-sm text-gray-500 sm:block dark:text-gray-400'>
+          从你此刻最关心的事开始
+        </span>
+      </div>
+
+      <div className='grid gap-3 md:grid-cols-3'>
+        {entries.map(entry => {
+          const featuredPost = latestPosts.find(
+            post => post.category === entry.category
+          )
+
+          return (
+            <div
+              key={entry.category}
+              className='rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md dark:border-gray-800 dark:bg-hexo-black-gray'>
+              <SmartLink href={entry.href} className='group block'>
+                <div className='flex items-center justify-between gap-3'>
+                  <div className='flex h-9 w-9 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 dark:bg-white/10'>
+                    <i className={entry.icon} aria-hidden='true' />
+                  </div>
+                  <span className='text-sm text-gray-400 transition-colors group-hover:text-indigo-600 dark:text-gray-500'>
+                    查看全部 <i className='fas fa-arrow-right ml-1' aria-hidden='true' />
+                  </span>
+                </div>
+                <h3 className='mt-5 text-lg font-semibold text-gray-800 group-hover:text-indigo-600 dark:text-gray-100'>
+                  {entry.title}
+                </h3>
+                <p className='mt-1 text-sm leading-6 text-gray-500 dark:text-gray-400'>
+                  {entry.description}
+                </p>
+              </SmartLink>
+
+              {featuredPost && (
+                <SmartLink
+                  href={featuredPost.href}
+                  className='mt-5 block border-t border-gray-100 pt-3 text-sm font-medium leading-6 text-gray-700 hover:text-indigo-600 dark:border-gray-800 dark:text-gray-300'>
+                  <span className='mr-2 text-xs text-gray-400'>最新</span>
+                  <span className='line-clamp-2'>{featuredPost.title}</span>
+                </SmartLink>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </section>
+  )
+}
+
+/**
  * 首页
  * 是一个博客列表，嵌入一个Hero大图
  * @param {*} props
  * @returns
  */
 const LayoutIndex = props => {
-  return <LayoutPostList {...props} className='pt-8' />
+  return (
+    <>
+      <HomeExploreSection {...props} />
+      <LayoutPostList {...props} className='pt-8' />
+    </>
+  )
 }
 
 /**
